@@ -1,16 +1,32 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import pygame
+import time
+import math
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+#non-physical representation
+TRACK = pygame.image.load('Resources/Track.png')
+BACKGROUND = pygame.image.load('Resources/Background.png')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+#playable models
+MCAR = pygame.image.load('Resources/MainCar.png')
+COPS = pygame.image.load('Resources/PoliceCar.png')
+
+#important game objectsz
+BORDER = pygame.image.load('Resources/autotrack transparent.png')
+FINISH = pygame.image.load('Resources/Finish line.png')
+
+WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("SB")
+
+
+play = True
+while play:
+
+    WIN.blit(BACKGROUND, (0, 0))
+    WIN.blit(TRACK, (0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.quit:
+            play = False
+            break
+pygame.quit()
