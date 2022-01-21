@@ -48,7 +48,7 @@ class BolidCars:
         self.move()
 
     def move_backwards(self):
-        self.velocity = min(self.velocity - self.acceleration, self.max_velocity / 3)
+        self.velocity = min(self.velocity - self.acceleration, self.max_velocity / 2)
         self.move()
 
     def move(self):
