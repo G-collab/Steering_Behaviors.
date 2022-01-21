@@ -28,44 +28,58 @@ class BolidCars:
     def __init__(self, max_velocity, rotation_velocity):
         self.img = self.IMG
         self.max_velocity = max_velocity
-        self.rotation_velocity = rotation_velocity
         self.velocity = 0
+        self.rotation_velocity = rotation_velocity
         self.angle = 0
         self.x, self.y = self.START_POS
         self.acceleration = 0.1
 
-    def rotate(self, right=False, left=False):
-        if right:
-            self.angle = self.rotation_velocity
-        elif left:
-            self.angle = self.rotation_velocity
+    def rotate(self, left=False, right=False):
+        if left:
+            self.angle += self.rotation_velocity
+        elif right:
+            self.angle -= self.rotation_velocity
 
     def draw(self, win):
         bl_center_rotate(win, self.img, (self.x, self.y), self.angle)
 
     def move_forward(self):
         self.velocity = min(self.velocity + self.acceleration, self.max_velocity)
+        self.move()
+
+    def move_backwards(self):
+        self.velocity = min(self.velocity - self.acceleration, self.max_velocity / 3)
+        self.move()
 
     def move(self):
-        self.x += self.velocity
+        rad = math.radians(self.angle)
+        vertical = math.cos(rad) * self.velocity
+        horizon = math.sin(rad) * self.velocity
+        self.y -= vertical
+        self.x -= horizon
 
-class Player_Car(BolidCars):
+    def speed_down(self):
+        self.velocity = max(self.max_velocity - self.acceleration / 2, 0)
+        self.move()
+
+
+class PlayerCar(BolidCars):
     IMG = MCAR
     START_POS = (145, 200)
 
 
 def draw(win, images, player_car):
-        for img, pos in images:
-            win.blit(img, pos)
+    for img, pos in images:
+        win.blit(img, pos)
 
-        player_car.draw(win)
-        pg.display.update()
+    player_car.draw(win)
+    pg.display.update()
 
 
 run = True
 clock = pg.time.Clock()
 images = [(BACKGROUND, (0, 0)), (BORDER, (0, 0))]
-player_car = Player_Car(4, 4)
+player_car = PlayerCar(4, 4)
 
 while run:
     clock.tick(FrameRate)
@@ -79,12 +93,20 @@ while run:
 
     controls = pg.key.get_pressed()
 
+
     if controls[pg.K_a]:
         player_car.rotate(left=True)
     if controls[pg.K_d]:
         player_car.rotate(right=True)
+
     if controls[pg.K_w]:
-        moved = True
+
         player_car.move_forward()
+
+    if controls[pg.K_s]:
+
+        player_car.move_backwards()
+
+
 
 pg.quit()
