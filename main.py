@@ -1,7 +1,7 @@
 import pygame as pg
 import time
 import math
-from Tools import rescale
+from Tools import rescale,bl_center_rotate
 
 
 #non-physical representation
@@ -9,49 +9,82 @@ from Tools import rescale
 BACKGROUND = rescale(pg.image.load('Resources/Background.png'), 3)
 
 #playable models
-MCAR = rescale(pg.image.load('Resources/MainCar.png'), 0.05)
+MCAR = rescale(pg.image.load('Resources/MainCar.png'), 0.07)
 COPS = rescale(pg.image.load('Resources/PoliceCar.png'), 0.01)
 
 #important game objectsz
+
 BORDER =rescale(pg.image.load('Resources/autotrack transparent.png'), 0.88)
 FINISH = rescale(pg.image.load('Resources/Finish line.png'), 0.01)
 
-
+#pygame window
 WIN = pg.display.set_mode((795, 750))
 pg.display.set_caption("SB")
 
+FrameRate = 120
 
-FrameRate = 60
 
 class BolidCars:
     def __init__(self, max_velocity, rotation_velocity):
+        self.img = self.IMG
         self.max_velocity = max_velocity
         self.rotation_velocity = rotation_velocity
         self.velocity = 0
         self.angle = 0
+        self.x, self.y = self.START_POS
+        self.acceleration = 0.1
 
-    def rotate ( )
+    def rotate(self, right=False, left=False):
+        if right:
+            self.angle = self.rotation_velocity
+        elif left:
+            self.angle = self.rotation_velocity
+
+    def draw(self, win):
+        bl_center_rotate(win, self.img, (self.x, self.y), self.angle)
+
+    def move_forward(self):
+        self.velocity = min(self.velocity + self.acceleration, self.max_velocity)
+
+    def move(self):
+        self.x += self.velocity
+
+class Player_Car(BolidCars):
+    IMG = MCAR
+    START_POS = (145, 200)
 
 
+def draw(win, images, player_car):
+        for img, pos in images:
+            win.blit(img, pos)
+
+        player_car.draw(win)
+        pg.display.update()
 
 
-
-def draw(win, images):
-    for img, pos in images:
-        win.blit(img, pos)
-
-play = True
+run = True
 clock = pg.time.Clock()
-images = [(BACKGROUND,(0, 0)), (BORDER,(0, 0))]
-while play:
+images = [(BACKGROUND, (0, 0)), (BORDER, (0, 0))]
+player_car = Player_Car(4, 4)
+
+while run:
     clock.tick(FrameRate)
 
-    draw(WIN, images)
-
-    pg.display.update()
+    draw(WIN, images, player_car)
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            play = False
+            run = False
             break
+
+    controls = pg.key.get_pressed()
+
+    if controls[pg.K_a]:
+        player_car.rotate(left=True)
+    if controls[pg.K_d]:
+        player_car.rotate(right=True)
+    if controls[pg.K_w]:
+        moved = True
+        player_car.move_forward()
+
 pg.quit()
